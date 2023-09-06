@@ -10,7 +10,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class LoanOfferDTO {
 
-    private static Long applicationId;
+    private static long applicationId;
     private BigDecimal requestedAmount;
     private BigDecimal totalAmount;
     private int term;
