@@ -1,6 +1,7 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanRequestDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
@@ -25,17 +26,12 @@ public class ApplicationController {
     }
 
     @PostMapping("/offers")
-    public List<LoanOfferDTO> offerDTOS(@RequestBody LoanRequestDTO loanRequestDTO) {
+    public List<LoanOfferDTO> offerDTOS(@RequestBody @Validated LoanRequestDTO loanRequestDTO) {
         BigDecimal amount = loanRequestDTO.getAmount();
         logger.info(String.format("Extracted amount from LoanRequestDTO: %s", amount.toString()));
         int term = loanRequestDTO.getTerm();
         logger.info(String.format("Extracted term from LoanRequestDTO: %d", term));
 
         return applicationService.getOffers(amount, term);
-    }
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello";
     }
 }
