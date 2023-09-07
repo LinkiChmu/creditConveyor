@@ -37,7 +37,7 @@ public class ApplicationService {
         offers.add(createOffer(amount, term, true, false));
         offers.add(createOffer(amount, term, true, true));
 
-        return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::hashCode)).toList();
+        return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
 
     private LoanOfferDTO createOffer(BigDecimal amount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
