@@ -3,11 +3,12 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString
+@EqualsAndHashCode(of = "rate")
+
 public class LoanOfferDTO {
 
     private long applicationId;
@@ -19,22 +20,11 @@ public class LoanOfferDTO {
     private Boolean isInsuranceEnabled;
     private Boolean isSalaryClient;
 
-    public LoanOfferDTO(BigDecimal requestedAmount, int term) {
-        //++applicationId;
+    public LoanOfferDTO(long applicationId, BigDecimal requestedAmount, int term, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+        this.applicationId = applicationId;
         this.requestedAmount = requestedAmount;
         this.term = term;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoanOfferDTO that = (LoanOfferDTO) o;
-        return rate.equals(that.rate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rate);
+        this.isInsuranceEnabled = isInsuranceEnabled;
+        this.isSalaryClient = isSalaryClient;
     }
 }

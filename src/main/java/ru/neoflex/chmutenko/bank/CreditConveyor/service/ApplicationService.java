@@ -32,28 +32,20 @@ public class ApplicationService {
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
         List<LoanOfferDTO> offers = new ArrayList<>();
-        logger.info("Creating offer list");
+        logger.info(String.format("Creating offer list with applicationId: %s", applicationId ));
 
         offers.add(createOffer(applicationId, amount, term, false, false));
         offers.add(createOffer(applicationId, amount, term, false, true));
         offers.add(createOffer(applicationId, amount, term, true, false));
         offers.add(createOffer(applicationId, amount, term, true, true));
-
+        logger.info("Sorting offer list");
         return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
 
-    private LoanOfferDTO createOffer(long applicationId, BigDecimal amount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
-        LoanOfferDTO offer = new LoanOfferDTO(amount, term);
-        offer.setApplicationId(applicationId);
-        offer.setRequestedAmount(amount);
-        offer.setTerm(term);
+    private LoanOfferDTO createOffer(long applicationId, BigDecimal requestedAmount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
+        LoanOfferDTO offer = new LoanOfferDTO(applicationId, requestedAmount, term, isInsuranceEnabled, isSalaryClient);
 
-        offer.setIsInsuranceEnabled(isInsuranceEnabled);
-        logger.info(String.format("Setting isInsuranceEnabled: %b", isInsuranceEnabled));
-        offer.setIsSalaryClient(isSalaryClient);
-        logger.info(String.format("Setting isSalaryClient: %b", isSalaryClient));
-
-        BigDecimal totalAmount = calculateTotalAmount(amount, isInsuranceEnabled, insuranceAmount);
+        BigDecimal totalAmount = calculateTotalAmount(requestedAmount, isInsuranceEnabled, insuranceAmount);
         offer.setTotalAmount(totalAmount);
         logger.info(String.format("Setting totalAmount: %s", totalAmount));
 
@@ -69,7 +61,7 @@ public class ApplicationService {
         return offer;
     }
 
-    // insurance increases the total amount by 100,000
+    // insurance increases the total amount by insuranceAmount
     private BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
         return (isInsuranceEnabled) ? amount.add(insuranceAmount) : amount;
     }
@@ -77,24 +69,20 @@ public class ApplicationService {
     private BigDecimal calculateTotalRent(BigDecimal baseRate, boolean isInsuranceEnabled, boolean isSalaryClient) {
         // insurance reduces the rate by 3 points
         BigDecimal totalRate = (isInsuranceEnabled) ? baseRate.subtract(new BigDecimal(3)) : baseRate;
-
         // salary client reduces the rate by 1 points
         totalRate = (isSalaryClient) ? totalRate.subtract(new BigDecimal(1)) : totalRate;
 
         return totalRate;
     }
 
+    // formula for calculating annuityRatio = ( monthlyRate * (1 + monthlyRate)^term ) / (1 + monthlyRate)^term - 1
     private BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, int term) {
         MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
         BigDecimal monthlyRate = rate.divide(new BigDecimal(term), mathContext).divide(new BigDecimal(100), mathContext);
-        logger.info(String.format("Calculated monthlyRate: %s", monthlyRate));
 
         BigDecimal accumulatedRatio = monthlyRate.add(new BigDecimal(1)).pow(term, mathContext);
-        logger.info(String.format("Calculated accumulatedRatio: %s", accumulatedRatio));
-
         BigDecimal annuityRatio = (monthlyRate.multiply(accumulatedRatio, mathContext))
                 .divide(accumulatedRatio.subtract(new BigDecimal(1)), mathContext);
-        logger.info(String.format("Calculated annuityRatio: %s", annuityRatio));
 
         return amount.multiply(annuityRatio, mathContext);
     }
