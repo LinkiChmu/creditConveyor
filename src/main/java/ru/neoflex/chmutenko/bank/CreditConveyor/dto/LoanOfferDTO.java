@@ -10,7 +10,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class LoanOfferDTO {
 
-    private static long applicationId;
+    private long applicationId;
     private BigDecimal requestedAmount;
     private BigDecimal totalAmount;
     private int term;
@@ -20,7 +20,7 @@ public class LoanOfferDTO {
     private Boolean isSalaryClient;
 
     public LoanOfferDTO(BigDecimal requestedAmount, int term) {
-        ++applicationId;
+        //++applicationId;
         this.requestedAmount = requestedAmount;
         this.term = term;
     }

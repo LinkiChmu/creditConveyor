@@ -22,6 +22,7 @@ public class ApplicationService {
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
+    private static long applicationId;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
@@ -29,20 +30,21 @@ public class ApplicationService {
     }
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
+        applicationId++;
         List<LoanOfferDTO> offers = new ArrayList<>();
         logger.info("Creating offer list");
 
-        offers.add(createOffer(amount, term, false, false));
-        offers.add(createOffer(amount, term, false, true));
-        offers.add(createOffer(amount, term, true, false));
-        offers.add(createOffer(amount, term, true, true));
+        offers.add(createOffer(applicationId, amount, term, false, false));
+        offers.add(createOffer(applicationId, amount, term, false, true));
+        offers.add(createOffer(applicationId, amount, term, true, false));
+        offers.add(createOffer(applicationId, amount, term, true, true));
 
         return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
 
-    private LoanOfferDTO createOffer(BigDecimal amount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
+    private LoanOfferDTO createOffer(long applicationId, BigDecimal amount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
         LoanOfferDTO offer = new LoanOfferDTO(amount, term);
-
+        offer.setApplicationId(applicationId);
         offer.setRequestedAmount(amount);
         offer.setTerm(term);
 
