@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/conveyor")
+@RequestMapping("/conveyor/offers")
 public class ApplicationController {
 
     private final ApplicationService applicationService;
@@ -25,7 +25,7 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
-    @PostMapping("/offers")
+    @PostMapping()
     public List<LoanOfferDTO> offerDTOs(@RequestBody @Validated LoanRequestDTO loanRequestDTO) {
         BigDecimal amount = loanRequestDTO.getAmount();
         logger.info(String.format("Extracted amount from LoanRequestDTO: %s", amount.toString()));
