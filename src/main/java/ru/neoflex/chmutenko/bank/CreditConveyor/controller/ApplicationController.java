@@ -26,7 +26,7 @@ public class ApplicationController {
     }
 
     @PostMapping("/offers")
-    public List<LoanOfferDTO> offerDTOS(@RequestBody @Validated LoanRequestDTO loanRequestDTO) {
+    public List<LoanOfferDTO> offerDTOs(@RequestBody @Validated LoanRequestDTO loanRequestDTO) {
         BigDecimal amount = loanRequestDTO.getAmount();
         logger.info(String.format("Extracted amount from LoanRequestDTO: %s", amount.toString()));
         int term = loanRequestDTO.getTerm();

@@ -38,7 +38,7 @@ public class ApplicationService {
         offers.add(createOffer(applicationId, amount, term, false, true));
         offers.add(createOffer(applicationId, amount, term, true, false));
         offers.add(createOffer(applicationId, amount, term, true, true));
-        logger.info("Sorting offer list");
+        logger.info("Offer list created");
         return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
 

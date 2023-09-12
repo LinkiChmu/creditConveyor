@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Setter
 @ToString
 @EqualsAndHashCode(of = "rate")
-
+@NoArgsConstructor
 public class LoanOfferDTO {
 
     private long applicationId;
