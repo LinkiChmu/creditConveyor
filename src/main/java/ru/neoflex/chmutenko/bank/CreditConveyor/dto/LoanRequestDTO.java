@@ -3,20 +3,15 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.BirthDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class LoanRequestDTO {
     @NotNull(message="Amount should not be empty")
     @DecimalMin(value="10000.00", message="Amount should be greater than or equal to 10 000")

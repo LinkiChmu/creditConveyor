@@ -4,10 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode(of = "rate")
+@Data
 @NoArgsConstructor
 public class LoanOfferDTO {
 
