@@ -15,6 +15,7 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.dto.PaymentScheduleElement;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ScoringService;
+import ru.neoflex.chmutenko.bank.CreditConveyor.util.LoanDeniedException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -47,8 +48,8 @@ public class CalculationController {
                 isWorkExperienceTotalNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceTotal()) ||
                 isWorkExperienceCurrentNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceCurrent())
         ) {
-            logger.warn("Loan scoring not passed. Throwing IllegalArgumentException");
-            throw new IllegalArgumentException("Sorry! LOAN DENIED");}
+            logger.warn("Loan scoring not passed. Throwing LoanDeniedException");
+            throw new LoanDeniedException();}
 
         return null;//scoringService.calculateCredit(scoringDataDTO);
     }
