@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.CreditDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.PaymentScheduleElement;
@@ -75,5 +75,10 @@ public class CalculationController {
 
     private boolean isWorkExperienceCurrentNotValid (int workExperienceCurrent) {
         return workExperienceCurrent < 3;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentExceptionHandler(IllegalArgumentException e) {
+        return new ResponseEntity<>("Sorry, loan denied", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }
