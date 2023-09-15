@@ -48,7 +48,7 @@ public class ScoringDataDTO {
     @NotNull
     @JsonFormat(pattern = "yyyy.MM.dd")
     @DateTimeFormat(pattern = "yyyy.MM.dd")
-    @BirthDate(message = "Birth date should be no late than 18 years ago")
+    //@BirthDate(message = "Birth date should be no late than 18 years ago")
     private LocalDate birthdate;
 
     @Pattern(regexp = "^[\\d]{4}$", message = "Passport series must consist only of 4 digits")
