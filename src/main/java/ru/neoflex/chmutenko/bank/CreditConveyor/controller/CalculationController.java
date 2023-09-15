@@ -26,7 +26,7 @@ public class CalculationController {
 
     private final ScoringService scoringService;
     //private final CalculationService calculationService;
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
 
     @Autowired
     public CalculationController(ScoringService scoringService) {
@@ -46,51 +46,22 @@ public class CalculationController {
             throw new DataNotValidException(errorMsg.toString());
         }
         logger.info("Starting calculateCredit() with param scoringDataDTO %s".formatted(scoringDataDTO));
-        int age = countAge(scoringDataDTO.getBirthdate());
+        int age = scoringService.countAge(scoringDataDTO.getBirthdate());
         logger.info("Counted age: %d".formatted(age));
         if (
-                isUnemployed(scoringDataDTO.getEmploymentDTO().getEmploymentStatus()) ||
-                isRequestedAmountTooHigh(scoringDataDTO.getAmount(), scoringDataDTO.getEmploymentDTO().getSalary()) ||
-                isAgeNotValid(age) ||
-                isWorkExperienceTotalNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceTotal()) ||
-                isWorkExperienceCurrentNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceCurrent())
+                scoringService.isUnemployed(scoringDataDTO.getEmploymentDTO().getEmploymentStatus()) ||
+                        scoringService.isRequestedAmountTooHigh(scoringDataDTO.getAmount(), scoringDataDTO.getEmploymentDTO().getSalary()) ||
+                        scoringService.isAgeNotValid(age) ||
+                        scoringService.isWorkExperienceTotalNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceTotal()) ||
+                        scoringService.isWorkExperienceCurrentNotValid(scoringDataDTO.getEmploymentDTO().getWorkExperienceCurrent())
         ) {
             logger.warn("Loan scoring not passed. Throwing LoanDeniedException");
             throw new LoanDeniedException();}
 
-        return null;//scoringService.calculateCredit(scoringDataDTO);
+        return null;
     }
 
-    private boolean isUnemployed(EmploymentStatus status) {
-        logger.info("Starting isUnemployed() with param EmploymentStatus %s".formatted(status));
-        return status == EmploymentStatus.UNEMPLOYED;
-    }
 
-    private boolean isRequestedAmountTooHigh(BigDecimal requestedAmount, BigDecimal salary) {
-        logger.info("Starting isRequestedAmountTooHigh() with params requestedAmount %s and salary %s".formatted(
-                requestedAmount.toString(), salary.toString()));
-        return requestedAmount.compareTo(salary.multiply(new BigDecimal(20))) == 1;
-    }
-
-    private int countAge(LocalDate birthdate) {
-        logger.info("Starting countAge() with param LocalDate birthdate %s".formatted(birthdate.toString()));
-        return Period.between(birthdate, LocalDate.now()).getYears();
-    }
-
-    private boolean isAgeNotValid(int age) {
-        logger.info("Starting isAgeNotValid() with param age %d".formatted(age));
-        return age < 20 || age > 60;
-    }
-
-    private boolean isWorkExperienceTotalNotValid (int workExperienceTotal) {
-        logger.info("Starting isWorkExperienceTotalNotValid() with param workExperienceTotal %d".formatted(workExperienceTotal));
-        return workExperienceTotal < 12;
-    }
-
-    private boolean isWorkExperienceCurrentNotValid (int workExperienceCurrent) {
-        logger.info("Starting isWorkExperienceCurrentNotValid() with param workExperienceCurrent %d".formatted(workExperienceCurrent));
-        return workExperienceCurrent < 3;
-    }
 
 
 }
