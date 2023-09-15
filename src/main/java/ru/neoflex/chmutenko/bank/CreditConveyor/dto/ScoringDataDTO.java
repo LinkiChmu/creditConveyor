@@ -1,9 +1,11 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.BirthDate;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.GenderSubset;
@@ -72,7 +74,8 @@ public class ScoringDataDTO {
     @Min(value = 0, message = "Number of dependents should be greater than or equal to 0")
     private int dependentAmount;
 
-    //private EmploymentDTO employmentDTO;
+    @JsonProperty("employment")
+    private EmploymentDTO employmentDTO;
 
     @Pattern(regexp = "^[\\d]{20}$")
     private String account;

@@ -3,6 +3,7 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.springframework.stereotype.Component;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.EmploymentPositionSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.EmploymentStatusSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
