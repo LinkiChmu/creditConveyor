@@ -3,11 +3,10 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.BirthDate;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.GenderSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.MaritalStatusSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.Gender;
@@ -26,7 +25,7 @@ public class ScoringDataDTO {
 
     @NotNull(message = "Term should not be empty")
     @Digits(fraction = 0, integer = 3, message = "Term must consist only of digits and be an integer")
-    @Min(value = 6L, message = "Term should be greater than or equal to 6")
+    @Min(value = 6, message = "Term should be greater than or equal to 6")
     private int term;
 
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
@@ -48,7 +47,7 @@ public class ScoringDataDTO {
     @NotNull
     @JsonFormat(pattern = "yyyy.MM.dd")
     @DateTimeFormat(pattern = "yyyy.MM.dd")
-    //@BirthDate(message = "Birth date should be no late than 18 years ago")
+    @Past(message = "Birthdate should be in past")
     private LocalDate birthdate;
 
     @Pattern(regexp = "^[\\d]{4}$", message = "Passport series must consist only of 4 digits")
@@ -74,6 +73,8 @@ public class ScoringDataDTO {
     @Min(value = 0, message = "Number of dependents should be greater than or equal to 0")
     private int dependentAmount;
 
+    @Valid
+    @NotNull
     @JsonProperty("employment")
     private EmploymentDTO employmentDTO;
 

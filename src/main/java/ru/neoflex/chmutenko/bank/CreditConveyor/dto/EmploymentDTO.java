@@ -1,5 +1,6 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -22,13 +23,20 @@ public class EmploymentDTO {
     @Pattern(regexp = "^[\\d]{10}$")
     private String employerINN;
 
+    @NotNull
+    @Min(value = 0)
     private BigDecimal salary;
 
     @EmploymentPositionSubset(anyOf = {EmploymentPosition.MIDDLE_MANAGER, EmploymentPosition.TOP_MANAGER, EmploymentPosition.WORKER})
     private EmploymentPosition position;
 
+    @NotNull
+    @Min(value = 0)
     private int workExperienceTotal;
 
+    @NotNull
+    @Min(value = 0)
     private int workExperienceCurrent ;
+
 
 }

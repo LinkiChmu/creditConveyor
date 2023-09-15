@@ -4,18 +4,16 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.CreditDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
-import ru.neoflex.chmutenko.bank.CreditConveyor.dto.PaymentScheduleElement;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ScoringService;
 import ru.neoflex.chmutenko.bank.CreditConveyor.util.LoanDeniedException;
+import ru.neoflex.chmutenko.bank.CreditConveyor.util.DataNotValidException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,7 +35,16 @@ public class CalculationController {
     }
 
     @PostMapping
-    public CreditDTO calculateCredit (@RequestBody @Valid ScoringDataDTO scoringDataDTO) {
+    public CreditDTO calculateCredit (@RequestBody @Valid ScoringDataDTO scoringDataDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error:errors) {
+                errorMsg.append(error.getField()).append(" - ")
+                        .append(error.getDefaultMessage()).append("\n");
+            }
+            throw new DataNotValidException(errorMsg.toString());
+        }
         logger.info("Starting calculateCredit() with param scoringDataDTO %s".formatted(scoringDataDTO));
         int age = countAge(scoringDataDTO.getBirthdate());
         logger.info("Counted age: %d".formatted(age));
