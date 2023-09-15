@@ -1,5 +1,6 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 
 
 @Service
+@NoArgsConstructor
 public class ApplicationService {
 
     @Value("${loanOffer.baseRate}")
@@ -25,9 +27,6 @@ public class ApplicationService {
     private static long applicationId;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
-
-    public ApplicationService() {
-    }
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
