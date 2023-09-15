@@ -84,8 +84,5 @@ public class CalculationController {
         return workExperienceCurrent < 3;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandler(IllegalArgumentException e) {
-        return new ResponseEntity<>("Sorry, loan denied", HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+
 }
