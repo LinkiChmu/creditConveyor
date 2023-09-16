@@ -53,24 +53,10 @@ public class CalculationController {
         EmploymentDTO employmentDTO = scoringDataDTO.getEmploymentDTO();
         logger.info("EmploymentDTO extracted from ScoringDataDTO: %s".formatted(employmentDTO));
 
-        int age = scoringService.countAge(scoringDataDTO.getBirthdate());
-        logger.info("Counted age: %d".formatted(age));
+        scoringService.scoreData(scoringDataDTO, employmentDTO);
 
-        if (scoringService.isUnemployed(employmentDTO.getEmploymentStatus()) ||
-                scoringService.isRequestedAmountTooHigh(scoringDataDTO.getAmount(), employmentDTO.getSalary()) ||
-                scoringService.isAgeNotValid(age) ||
-                scoringService.isWorkExperienceTotalNotValid(employmentDTO.getWorkExperienceTotal()) ||
-                scoringService.isWorkExperienceCurrentNotValid(employmentDTO.getWorkExperienceCurrent())
-        ) {
-            logger.warn("Credit scoring not passed. Throwing LoanDeniedException");
-            throw new LoanDeniedException();
-        }
-        logger.info("Credit scoring is passed");
+        BigDecimal totalRate = calculationService.calculateTotalRate(baseRate, scoringDataDTO, employmentDTO);
 
-        BigDecimal totalRate = calculationService.calculateRate(baseRate, employmentDTO.getEmploymentStatus(),
-                employmentDTO.getPosition(), scoringDataDTO.getMaritalStatus(), scoringDataDTO.getDependentAmount(),
-                scoringDataDTO.getGender(), age, scoringDataDTO.isInsuranceEnabled(), scoringDataDTO.isSalaryClient());
-        logger.info("calculateRate() calculated totalRate %s".formatted(totalRate.toString()));
 
         return null;
     }

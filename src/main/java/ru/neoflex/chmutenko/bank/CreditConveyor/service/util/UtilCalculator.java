@@ -9,10 +9,12 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.service.ApplicationService;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 @NoArgsConstructor
-public class CreditCalculation {
+public class UtilCalculator {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
@@ -38,4 +40,12 @@ public class CreditCalculation {
 
         return monthlyPayment;
     }
+
+    public int countAge(LocalDate birthdate) {
+        logger.info("Starting countAge() with param LocalDate birthdate %s".formatted(birthdate.toString()));
+        int age = Period.between(birthdate, LocalDate.now()).getYears();
+        logger.info("Counted age: %d".formatted(age));
+        return age;
+    }
+
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CreditCalculation;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
 
 
 @Service
@@ -24,12 +24,12 @@ public class ApplicationService {
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
-    private CreditCalculation creditCalculation;
+    private UtilCalculator creditCalculation;
     private static long applicationId;
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
     @Autowired
-    public ApplicationService(CreditCalculation creditCalculation) {
+    public ApplicationService(UtilCalculator creditCalculation) {
         this.creditCalculation = creditCalculation;
     }
 

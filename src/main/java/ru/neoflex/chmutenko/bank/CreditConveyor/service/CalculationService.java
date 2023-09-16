@@ -6,39 +6,43 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.controller.CalculationController;
+import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
+import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.Gender;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.MaritalStatus;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CreditCalculation;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 @Service
 @NoArgsConstructor
 public class CalculationService {
 
-    private CreditCalculation creditCalculation;
+    private UtilCalculator calculator;
     private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
 
     @Autowired
-    public CalculationService(CreditCalculation creditCalculation) {
-        this.creditCalculation = creditCalculation;
+    public CalculationService(UtilCalculator calculator) {
+        this.calculator = calculator;
     }
 
-    public BigDecimal calculateRate(BigDecimal baseRate, EmploymentStatus employmentStatus,
-                                    EmploymentPosition position,
-                                    MaritalStatus maritalStatus,
-                                    int dependentAmount, Gender gender, int age,
-                                    boolean isInsuranceEnabled, boolean isSalaryClient) {
-        logger.info(String.format(
-                "Starting calculateRate() with params baseRate %s, employmentStatus %s, employmentPosition %s, maritalStatus %s, dependentAmount %d, gender %s, age %d",
-                baseRate.toString(), employmentStatus, position, maritalStatus, dependentAmount, gender, age));
-        return setByInsuranceAndSalaryClient(isInsuranceEnabled, isSalaryClient,
-                setByGenderAndAge(gender, age,
-                        setByDependentsAmount(dependentAmount,
-                                setByMaritalStatus(maritalStatus, setByPosition(position,
-                                        setByEmploymentStatus(employmentStatus, baseRate))))));
+    public BigDecimal calculateTotalRate(BigDecimal baseRate, ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
+        logger.info("Starting calculateTotalRate() with params baseRate %s, scoringDataDTO %s,  employmentDTO %s".formatted(
+                baseRate.toString(), scoringDataDTO, employmentDTO));
+
+        BigDecimal rate = setByEmploymentStatus(employmentDTO.getEmploymentStatus(), baseRate);
+        rate = setByPosition(employmentDTO.getPosition(), rate);
+        rate = setByMaritalStatus(scoringDataDTO.getMaritalStatus(), rate);
+        rate = setByDependentsAmount(scoringDataDTO.getDependentAmount(), rate);
+        rate = setByGenderAndAge(scoringDataDTO.getGender(), calculator.countAge(scoringDataDTO.getBirthdate()), rate);
+        rate = setByInsuranceAndSalaryClient(scoringDataDTO.isInsuranceEnabled(), scoringDataDTO.isSalaryClient(), rate);
+
+        logger.info("Method calculateTotalRate returned totalRate %s".formatted(rate.toString()));
+        return rate;
+
     }
 
     private BigDecimal setByEmploymentStatus(EmploymentStatus status, BigDecimal rate) {
