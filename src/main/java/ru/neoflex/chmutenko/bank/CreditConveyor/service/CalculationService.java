@@ -3,12 +3,14 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.controller.CalculationController;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.Gender;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.MaritalStatus;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CreditCalculation;
 
 import java.math.BigDecimal;
 
@@ -16,7 +18,13 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class CalculationService {
 
+    private CreditCalculation creditCalculation;
     private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
+
+    @Autowired
+    public CalculationService(CreditCalculation creditCalculation) {
+        this.creditCalculation = creditCalculation;
+    }
 
     public BigDecimal calculateRate(BigDecimal baseRate, EmploymentStatus employmentStatus,
                                     EmploymentPosition position,

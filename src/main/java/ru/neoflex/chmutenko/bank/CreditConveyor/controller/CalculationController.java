@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.CreditDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
-import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.CalculationService;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ScoringService;
-import ru.neoflex.chmutenko.bank.CreditConveyor.util.LoanDeniedException;
-import ru.neoflex.chmutenko.bank.CreditConveyor.util.DataNotValidException;
+import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.LoanDeniedException;
+import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException;
 
 import java.math.BigDecimal;
 import java.util.List;

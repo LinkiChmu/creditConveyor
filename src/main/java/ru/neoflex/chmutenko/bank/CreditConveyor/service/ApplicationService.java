@@ -1,19 +1,19 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CreditCalculation;
 
 
 @Service
@@ -24,9 +24,14 @@ public class ApplicationService {
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
+    private CreditCalculation creditCalculation;
     private static long applicationId;
-
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
+
+    @Autowired
+    public ApplicationService(CreditCalculation creditCalculation) {
+        this.creditCalculation = creditCalculation;
+    }
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
@@ -52,7 +57,7 @@ public class ApplicationService {
         offer.setRate(totalRate);
         logger.info(String.format("Setting totalRate: %s", totalRate.toString()));
 
-        BigDecimal monthlyPayment = calculateMonthlyPayment(totalAmount, totalRate, term);
+        BigDecimal monthlyPayment = creditCalculation.calculateMonthlyPayment(totalAmount, totalRate, term);
         offer.setMonthlyPayment(monthlyPayment);
         logger.info(String.format("Setting monthlyPayment: %s", monthlyPayment));
 
@@ -74,26 +79,5 @@ public class ApplicationService {
         return totalRate;
     }
 
-    // formula for calculating annuityRatio = ( monthlyRate * (1 + monthlyRate)^term ) / (1 + monthlyRate)^term - 1
-    private BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, int term) {
-        logger.info("Starting calculateMonthlyPayment() with params amount %s, rate %s, term %d"
-                .formatted(amount.toString(), rate.toString(), term));
 
-        MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
-
-        BigDecimal monthlyRate = rate.divide(new BigDecimal(term), mathContext).divide(new BigDecimal(100), mathContext);
-        logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
-
-        BigDecimal accumulatedRatio = monthlyRate.add(new BigDecimal(1)).pow(term, mathContext);
-        logger.info("Calculated accumulatedRatio: %s".formatted(accumulatedRatio.toString()));
-
-        BigDecimal annuityRatio = (monthlyRate.multiply(accumulatedRatio, mathContext))
-                .divide(accumulatedRatio.subtract(new BigDecimal(1)), mathContext);
-        logger.info("Calculated annuityRatio: %s".formatted(annuityRatio.toString()));
-
-        BigDecimal monthlyPayment = amount.multiply(annuityRatio, mathContext);
-        logger.info("Calculated monthlyPayment: %s".formatted(monthlyPayment.toString()));
-
-        return monthlyPayment;
-    }
 }

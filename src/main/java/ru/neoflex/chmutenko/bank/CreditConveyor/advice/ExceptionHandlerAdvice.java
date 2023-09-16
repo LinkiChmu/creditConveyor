@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.neoflex.chmutenko.bank.CreditConveyor.util.DataNotValidException;
-import ru.neoflex.chmutenko.bank.CreditConveyor.util.LoanDeniedException;
+import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException;
+import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.LoanDeniedException;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {

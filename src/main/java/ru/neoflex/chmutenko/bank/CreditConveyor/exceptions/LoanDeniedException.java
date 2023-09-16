@@ -1,4 +1,4 @@
-package ru.neoflex.chmutenko.bank.CreditConveyor.util;
+package ru.neoflex.chmutenko.bank.CreditConveyor.exceptions;
 
 public class LoanDeniedException extends RuntimeException {
 }
