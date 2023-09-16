@@ -33,7 +33,9 @@ public class CalculationController {
     private BigDecimal insuranceAmount;
 
     @Autowired
-    public CalculationController(ScoringService scoringService, CalculationService calculationService, CreditResponseService creditResponseService) {
+    public CalculationController(ScoringService scoringService,
+                                 CalculationService calculationService,
+                                 CreditResponseService creditResponseService) {
         this.scoringService = scoringService;
         this.calculationService = calculationService;
         this.creditResponseService = creditResponseService;
@@ -59,17 +61,15 @@ public class CalculationController {
         BigDecimal totalRate = calculationService.calculateTotalRate(baseRate, scoringDataDTO, employmentDTO);
         logger.info("calculateTotalRate() returned totalRate: %s".formatted(totalRate.toString()));
 
-        BigDecimal totalAmount = calculationService.calculateTotalAmount(scoringDataDTO.getAmount(), scoringDataDTO.isInsuranceEnabled(), insuranceAmount);
+        BigDecimal totalAmount = calculationService.calculateTotalAmount(
+                scoringDataDTO.getAmount(), scoringDataDTO.isInsuranceEnabled(), insuranceAmount);
 
-        BigDecimal monthlyPayment = calculationService.calculateMonthlyPayment(totalAmount, totalRate, scoringDataDTO.getTerm());
+        BigDecimal monthlyPayment = calculationService.calculateMonthlyPayment(
+                totalAmount, totalRate, scoringDataDTO.getTerm());
 
         BigDecimal psk = calculationService.calculatePSK(totalRate, scoringDataDTO.getTerm());
 
-        CreditDTO creditDTO = creditResponseService.createCreditDTO(scoringDataDTO.getAmount(), scoringDataDTO.getTerm(),
+        return creditResponseService.createCreditDTO(scoringDataDTO.getAmount(), scoringDataDTO.getTerm(),
                 monthlyPayment, totalRate, psk, scoringDataDTO.isInsuranceEnabled(), scoringDataDTO.isSalaryClient());
-
-        return creditDTO;
     }
-
-
 }
