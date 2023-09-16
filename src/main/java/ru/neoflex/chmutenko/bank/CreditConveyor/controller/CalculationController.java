@@ -18,10 +18,7 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.util.LoanDeniedException;
 import ru.neoflex.chmutenko.bank.CreditConveyor.util.DataNotValidException;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/conveyor/calculation")
@@ -32,6 +29,8 @@ public class CalculationController {
     private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
     @Value("${loanOffer.baseRate}")
     private BigDecimal baseRate;
+    @Value("${loanOffer.insurance}")
+    private BigDecimal insuranceAmount;
 
     @Autowired
     public CalculationController(ScoringService scoringService, CalculationService calculationService) {
@@ -71,7 +70,7 @@ public class CalculationController {
 
         BigDecimal totalRate = calculationService.calculateRate(baseRate, employmentDTO.getEmploymentStatus(),
                 employmentDTO.getPosition(), scoringDataDTO.getMaritalStatus(), scoringDataDTO.getDependentAmount(),
-                scoringDataDTO.getGender(), age);
+                scoringDataDTO.getGender(), age, scoringDataDTO.isInsuranceEnabled(), scoringDataDTO.isSalaryClient());
         logger.info("calculateRate() calculated totalRate %s".formatted(totalRate.toString()));
 
         return null;

@@ -83,10 +83,12 @@ public class ScoringDataDTO {
     private String account;
 
     @NotNull
+    @JsonProperty
     @BooleanSubset(anyOf = {true, false})
     private boolean isInsuranceEnabled;
 
     @NotNull
+    @JsonProperty
     @BooleanSubset(anyOf = {true, false})
     private boolean isSalaryClient;
 }
