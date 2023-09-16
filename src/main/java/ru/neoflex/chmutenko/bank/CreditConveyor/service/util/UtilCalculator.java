@@ -25,7 +25,7 @@ public class UtilCalculator {
 
         MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
 
-        BigDecimal monthlyRate = rate.divide(new BigDecimal(term), mathContext).divide(new BigDecimal(100), mathContext);
+        BigDecimal monthlyRate = rate.divide(new BigDecimal(12), mathContext).divide(new BigDecimal(100), mathContext);
         logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
 
         BigDecimal accumulatedRatio = monthlyRate.add(new BigDecimal(1)).pow(term, mathContext);
@@ -41,11 +41,28 @@ public class UtilCalculator {
         return monthlyPayment;
     }
 
+    public BigDecimal monthlyRate(BigDecimal rate) {
+        logger.info("Starting annuityRatio() with param rate %s"
+                .formatted(rate.toString()));
+
+        MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
+
+        BigDecimal monthlyRate = rate.divide(new BigDecimal(12), mathContext);
+        logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
+
+        return monthlyRate;
+    }
+
+
     public int countAge(LocalDate birthdate) {
         logger.info("Starting countAge() with param LocalDate birthdate %s".formatted(birthdate.toString()));
         int age = Period.between(birthdate, LocalDate.now()).getYears();
         logger.info("Counted age: %d".formatted(age));
         return age;
+    }
+
+    public BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
+        return (isInsuranceEnabled) ? amount.add(insuranceAmount) : amount;
     }
 
 }

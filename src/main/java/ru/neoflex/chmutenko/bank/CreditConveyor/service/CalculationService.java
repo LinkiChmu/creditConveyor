@@ -15,7 +15,6 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.models.MaritalStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 
 @Service
 @NoArgsConstructor
@@ -42,7 +41,27 @@ public class CalculationService {
 
         logger.info("Method calculateTotalRate returned totalRate %s".formatted(rate.toString()));
         return rate;
+    }
 
+    public BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
+        BigDecimal totalAmount = calculator.calculateTotalAmount(amount, isInsuranceEnabled, insuranceAmount);
+        logger.info("method calculateTotalAmount() calculated totalAmount: %s".formatted(totalAmount.toString()));
+        return totalAmount;
+    }
+
+    public BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, int term) {
+        return calculator.calculateMonthlyPayment(amount, rate, term);
+    }
+
+    public BigDecimal calculatePSK(BigDecimal rate, int term) {
+        logger.info("Starting calculatePSK() with params rate %s,term %d"
+                .formatted(rate.toString(), term));
+
+        BigDecimal monthlyRate = calculator.monthlyRate(rate);
+        BigDecimal psk = monthlyRate.multiply(BigDecimal.valueOf(12));
+
+        logger.info("method calculatePSK() calculated PSK: %s".formatted(psk.toString()));
+        return psk;
     }
 
     private BigDecimal setByEmploymentStatus(EmploymentStatus status, BigDecimal rate) {
@@ -122,5 +141,4 @@ public class CalculationService {
         logger.info("setByInsuranceAndSalaryClient() returned rate %s".formatted(rate.toString()));
         return rate;
     }
-
 }

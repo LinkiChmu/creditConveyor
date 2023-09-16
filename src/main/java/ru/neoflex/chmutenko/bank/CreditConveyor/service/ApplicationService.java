@@ -24,19 +24,19 @@ public class ApplicationService {
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
-    private UtilCalculator creditCalculation;
+    private UtilCalculator calculator;
     private static long applicationId;
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
     @Autowired
-    public ApplicationService(UtilCalculator creditCalculation) {
-        this.creditCalculation = creditCalculation;
+    public ApplicationService(UtilCalculator calculator) {
+        this.calculator = calculator;
     }
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
         List<LoanOfferDTO> offers = new ArrayList<>();
-        logger.info(String.format("Creating offer list with applicationId: %s", applicationId ));
+        logger.info(String.format("Creating offer list with applicationId: %s", applicationId));
 
         offers.add(createOffer(applicationId, amount, term, false, false));
         offers.add(createOffer(applicationId, amount, term, false, true));
@@ -49,7 +49,7 @@ public class ApplicationService {
     private LoanOfferDTO createOffer(long applicationId, BigDecimal requestedAmount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
         LoanOfferDTO offer = new LoanOfferDTO(applicationId, requestedAmount, term, isInsuranceEnabled, isSalaryClient);
 
-        BigDecimal totalAmount = calculateTotalAmount(requestedAmount, isInsuranceEnabled, insuranceAmount);
+        BigDecimal totalAmount = calculator.calculateTotalAmount(requestedAmount, isInsuranceEnabled, insuranceAmount);
         offer.setTotalAmount(totalAmount);
         logger.info(String.format("Setting totalAmount: %s", totalAmount));
 
@@ -57,7 +57,7 @@ public class ApplicationService {
         offer.setRate(totalRate);
         logger.info(String.format("Setting totalRate: %s", totalRate.toString()));
 
-        BigDecimal monthlyPayment = creditCalculation.calculateMonthlyPayment(totalAmount, totalRate, term);
+        BigDecimal monthlyPayment = calculator.calculateMonthlyPayment(totalAmount, totalRate, term);
         offer.setMonthlyPayment(monthlyPayment);
         logger.info(String.format("Setting monthlyPayment: %s", monthlyPayment));
 
@@ -66,9 +66,7 @@ public class ApplicationService {
     }
 
     // insurance increases the total amount by insuranceAmount
-    private BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
-        return (isInsuranceEnabled) ? amount.add(insuranceAmount) : amount;
-    }
+
 
     private BigDecimal calculateTotalRent(BigDecimal baseRate, boolean isInsuranceEnabled, boolean isSalaryClient) {
         // insurance reduces the rate by 3 points

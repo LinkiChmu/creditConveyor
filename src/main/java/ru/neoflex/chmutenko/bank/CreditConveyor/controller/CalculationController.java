@@ -13,7 +13,6 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.CalculationService;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ScoringService;
-import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.LoanDeniedException;
 import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException;
 
 import java.math.BigDecimal;
@@ -52,10 +51,16 @@ public class CalculationController {
 
         EmploymentDTO employmentDTO = scoringDataDTO.getEmploymentDTO();
         logger.info("EmploymentDTO extracted from ScoringDataDTO: %s".formatted(employmentDTO));
-
         scoringService.scoreData(scoringDataDTO, employmentDTO);
 
         BigDecimal totalRate = calculationService.calculateTotalRate(baseRate, scoringDataDTO, employmentDTO);
+        logger.info("calculateTotalRate() returned totalRate: %s".formatted(totalRate.toString()));
+
+        BigDecimal totalAmount = calculationService.calculateTotalAmount(scoringDataDTO.getAmount(), scoringDataDTO.isInsuranceEnabled(), insuranceAmount);
+
+        BigDecimal monthlyPayment = calculationService.calculateMonthlyPayment(totalAmount, totalRate, scoringDataDTO.getTerm());
+
+        BigDecimal psk = calculationService.calculatePSK(totalRate, scoringDataDTO.getTerm());
 
 
         return null;
