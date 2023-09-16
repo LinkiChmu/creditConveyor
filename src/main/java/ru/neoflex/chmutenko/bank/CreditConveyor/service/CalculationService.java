@@ -1,11 +1,9 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.neoflex.chmutenko.bank.CreditConveyor.controller.CalculationController;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
@@ -17,11 +15,10 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
 import java.math.BigDecimal;
 
 @Service
-@NoArgsConstructor
 public class CalculationService {
 
-    private UtilCalculator calculator;
-    private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
+    private final UtilCalculator calculator;
+    private static final Logger logger = LoggerFactory.getLogger(CalculationService.class);
 
     @Autowired
     public CalculationService(UtilCalculator calculator) {

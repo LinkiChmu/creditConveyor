@@ -1,6 +1,5 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,14 +16,14 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
 
 
 @Service
-@NoArgsConstructor
 public class ApplicationService {
 
     @Value("${loanOffer.baseRate}")
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
-    private UtilCalculator calculator;
+
+    private final UtilCalculator calculator;
     private static long applicationId;
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
@@ -65,8 +64,6 @@ public class ApplicationService {
         return offer;
     }
 
-    // insurance increases the total amount by insuranceAmount
-
 
     private BigDecimal calculateTotalRent(BigDecimal baseRate, boolean isInsuranceEnabled, boolean isSalaryClient) {
         // insurance reduces the rate by 3 points
@@ -76,6 +73,4 @@ public class ApplicationService {
 
         return totalRate;
     }
-
-
 }
