@@ -12,6 +12,7 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.dto.CreditDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.CalculationService;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.CreditResponseService;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ScoringService;
 import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException;
 
@@ -24,6 +25,7 @@ public class CalculationController {
 
     private final ScoringService scoringService;
     private final CalculationService calculationService;
+    private final CreditResponseService creditResponseService;
     private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
     @Value("${loanOffer.baseRate}")
     private BigDecimal baseRate;
@@ -31,9 +33,10 @@ public class CalculationController {
     private BigDecimal insuranceAmount;
 
     @Autowired
-    public CalculationController(ScoringService scoringService, CalculationService calculationService) {
+    public CalculationController(ScoringService scoringService, CalculationService calculationService, CreditResponseService creditResponseService) {
         this.scoringService = scoringService;
         this.calculationService = calculationService;
+        this.creditResponseService = creditResponseService;
     }
 
     @PostMapping
@@ -62,8 +65,10 @@ public class CalculationController {
 
         BigDecimal psk = calculationService.calculatePSK(totalRate, scoringDataDTO.getTerm());
 
+        CreditDTO creditDTO = creditResponseService.createCreditDTO(scoringDataDTO.getAmount(), scoringDataDTO.getTerm(),
+                monthlyPayment, totalRate, psk, scoringDataDTO.isInsuranceEnabled(), scoringDataDTO.isSalaryClient());
 
-        return null;
+        return creditDTO;
     }
 
 
