@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.BooleanSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.GenderSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.MaritalStatusSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.Gender;
@@ -82,11 +81,7 @@ public class ScoringDataDTO {
     @Pattern(regexp = "^[\\d]{20}$")
     private String account;
 
-    @NotNull
-    @BooleanSubset(anyOf = {true, false})
     private boolean isInsuranceEnabled;
 
-    @NotNull
-    @BooleanSubset(anyOf = {true, false})
     private boolean isSalaryClient;
 }
