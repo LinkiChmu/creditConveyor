@@ -22,8 +22,8 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler()
-    public ResponseEntity<String> enumNotValidExceptionHandler(HttpMessageNotReadableException e) {
-        return new ResponseEntity<>("Data not valid: value not from the list", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> jsonParseErrorExceptionHandler(HttpMessageNotReadableException e) {
+        return new ResponseEntity<>("Incorrect data!", HttpStatus.BAD_REQUEST);
     }
 
 }
