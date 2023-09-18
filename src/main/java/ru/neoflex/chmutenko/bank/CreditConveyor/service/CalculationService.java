@@ -25,9 +25,11 @@ public class CalculationService {
         this.calculator = calculator;
     }
 
-    public BigDecimal calculateTotalRate(BigDecimal baseRate, ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
-        logger.info("Starting calculateTotalRate() with params baseRate %s, scoringDataDTO %s,  employmentDTO %s".formatted(
-                baseRate.toString(), scoringDataDTO, employmentDTO));
+    public BigDecimal calculateTotalRate(BigDecimal baseRate,
+                                         ScoringDataDTO scoringDataDTO,
+                                         EmploymentDTO employmentDTO) {
+        logger.info("Starting calculateTotalRate() with params baseRate %s, scoringDataDTO %s,  employmentDTO %s"
+                .formatted(baseRate.toString(), scoringDataDTO, employmentDTO));
 
         BigDecimal rate = setByEmploymentStatus(employmentDTO.getEmploymentStatus(), baseRate);
         rate = setByPosition(employmentDTO.getPosition(), rate);
@@ -40,13 +42,17 @@ public class CalculationService {
         return rate;
     }
 
-    public BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
+    public BigDecimal calculateTotalAmount(BigDecimal amount,
+                                           boolean isInsuranceEnabled,
+                                           BigDecimal insuranceAmount) {
         BigDecimal totalAmount = calculator.calculateTotalAmount(amount, isInsuranceEnabled, insuranceAmount);
         logger.info("method calculateTotalAmount() calculated totalAmount: %s".formatted(totalAmount.toString()));
         return totalAmount;
     }
 
-    public BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, int term) {
+    public BigDecimal calculateMonthlyPayment(BigDecimal amount,
+                                              BigDecimal rate,
+                                              int term) {
         return calculator.calculateMonthlyPayment(amount, rate, term);
     }
 
@@ -126,8 +132,11 @@ public class CalculationService {
         return rate;
     }
 
-    private BigDecimal setByInsuranceAndSalaryClient(boolean isInsuranceEnabled, boolean isSalaryClient, BigDecimal rate) {
-        logger.info("Starting setByInsuranceAndSalaryClient() with params isInsuranceEnabled %s, isSalaryClient %s, rate %s"
+    private BigDecimal setByInsuranceAndSalaryClient(boolean isInsuranceEnabled,
+                                                     boolean isSalaryClient,
+                                                     BigDecimal rate) {
+        logger.info(("Starting setByInsuranceAndSalaryClient() with params " +
+                "isInsuranceEnabled %s, isSalaryClient %s, rate %s")
                 .formatted(isInsuranceEnabled, isSalaryClient, rate.toString()));
         if (isInsuranceEnabled) {
             rate = rate.subtract(BigDecimal.valueOf(3L));

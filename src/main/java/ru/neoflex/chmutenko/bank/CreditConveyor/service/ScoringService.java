@@ -23,7 +23,9 @@ public class ScoringService {
         this.calculator = calculator;
     }
 
-    public void scoreData(ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
+    public void scoreData(ScoringDataDTO scoringDataDTO,
+                          EmploymentDTO employmentDTO) {
+
         if (isUnemployed(employmentDTO.getEmploymentStatus()) ||
                 isRequestedAmountTooHigh(scoringDataDTO.getAmount(), employmentDTO.getSalary()) ||
                 isAgeNotValid(calculator.countAge(scoringDataDTO.getBirthdate())) ||
@@ -42,8 +44,8 @@ public class ScoringService {
     }
 
     private boolean isRequestedAmountTooHigh(BigDecimal requestedAmount, BigDecimal salary) {
-        logger.info("Starting isRequestedAmountTooHigh() with params requestedAmount %s and salary %s".formatted(
-                requestedAmount.toString(), salary.toString()));
+        logger.info("Starting isRequestedAmountTooHigh() with params requestedAmount %s and salary %s"
+                .formatted(requestedAmount.toString(), salary.toString()));
         return requestedAmount.compareTo(salary.multiply(new BigDecimal(20))) == 1;
     }
 
@@ -54,12 +56,14 @@ public class ScoringService {
     }
 
     private boolean isWorkExperienceTotalNotValid(int workExperienceTotal) {
-        logger.info("Starting isWorkExperienceTotalNotValid() with param workExperienceTotal %d".formatted(workExperienceTotal));
+        logger.info("Starting isWorkExperienceTotalNotValid() with param workExperienceTotal %d"
+                .formatted(workExperienceTotal));
         return workExperienceTotal < 12;
     }
 
     private boolean isWorkExperienceCurrentNotValid(int workExperienceCurrent) {
-        logger.info("Starting isWorkExperienceCurrentNotValid() with param workExperienceCurrent %d".formatted(workExperienceCurrent));
+        logger.info("Starting isWorkExperienceCurrentNotValid() with param workExperienceCurrent %d"
+                .formatted(workExperienceCurrent));
         return workExperienceCurrent < 3;
     }
 }

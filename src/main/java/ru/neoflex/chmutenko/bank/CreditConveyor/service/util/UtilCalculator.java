@@ -18,13 +18,16 @@ public class UtilCalculator {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
-    // formula for calculating annuityRatio = ( monthlyRate * (1 + monthlyRate)^term ) / (1 + monthlyRate)^term - 1
-    public BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, int term) {
+
+    public BigDecimal calculateMonthlyPayment(BigDecimal amount,
+                                              BigDecimal rate,
+                                              int term) {
         logger.info("Starting calculateMonthlyPayment() with params amount %s, rate %s, term %d"
                 .formatted(amount.toString(), rate.toString(), term));
 
         MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
 
+        // formula annuityRatio = ( monthlyRate * (1 + monthlyRate)^term ) / (1 + monthlyRate)^term - 1
         BigDecimal monthlyRate = rate.divide(new BigDecimal(12), mathContext).divide(new BigDecimal(100), mathContext);
         logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
 
@@ -61,8 +64,9 @@ public class UtilCalculator {
         return age;
     }
 
-    public BigDecimal calculateTotalAmount(BigDecimal amount, boolean isInsuranceEnabled, BigDecimal insuranceAmount) {
+    public BigDecimal calculateTotalAmount(BigDecimal amount,
+                                           boolean isInsuranceEnabled,
+                                           BigDecimal insuranceAmount) {
         return (isInsuranceEnabled) ? amount.add(insuranceAmount) : amount;
     }
-
 }

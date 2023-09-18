@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -34,18 +33,24 @@ public class ApplicationService {
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
-        List<LoanOfferDTO> offers = new ArrayList<>();
         logger.info(String.format("Creating offer list with applicationId: %s", applicationId));
-
-        offers.add(createOffer(applicationId, amount, term, false, false));
-        offers.add(createOffer(applicationId, amount, term, false, true));
-        offers.add(createOffer(applicationId, amount, term, true, false));
-        offers.add(createOffer(applicationId, amount, term, true, true));
+        List<LoanOfferDTO> offers = List.of(
+                createOffer(applicationId, amount, term, false, false),
+                createOffer(applicationId, amount, term, false, true),
+                createOffer(applicationId, amount, term, true, false),
+                createOffer(applicationId, amount, term, true, true)
+        );
         logger.info("Offer list created");
+
         return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
 
-    private LoanOfferDTO createOffer(long applicationId, BigDecimal requestedAmount, int term, boolean isInsuranceEnabled, boolean isSalaryClient) {
+    private LoanOfferDTO createOffer(long applicationId,
+                                     BigDecimal requestedAmount,
+                                     int term,
+                                     boolean isInsuranceEnabled,
+                                     boolean isSalaryClient) {
+
         LoanOfferDTO offer = new LoanOfferDTO(applicationId, requestedAmount, term, isInsuranceEnabled, isSalaryClient);
 
         BigDecimal totalAmount = calculator.calculateTotalAmount(requestedAmount, isInsuranceEnabled, insuranceAmount);
@@ -65,7 +70,10 @@ public class ApplicationService {
     }
 
 
-    private BigDecimal calculateTotalRent(BigDecimal baseRate, boolean isInsuranceEnabled, boolean isSalaryClient) {
+    private BigDecimal calculateTotalRent(BigDecimal baseRate,
+                                          boolean isInsuranceEnabled,
+                                          boolean isSalaryClient) {
+
         // insurance reduces the rate by 3 points
         BigDecimal totalRate = (isInsuranceEnabled) ? baseRate.subtract(new BigDecimal(3)) : baseRate;
         // salary client reduces the rate by 1 points

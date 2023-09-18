@@ -19,19 +19,35 @@ public class CreditResponseService {
 
     private static final Logger logger = LoggerFactory.getLogger(CreditResponseService.class);
 
-    public CreditDTO createCreditDTO(BigDecimal amount, int term, BigDecimal monthlyPayment, BigDecimal rate,
-                                     BigDecimal psk, boolean isInsuranceEnabled, boolean isSalaryClient) {
+    public CreditDTO createCreditDTO(BigDecimal amount,
+                                     int term,
+                                     BigDecimal monthlyPayment,
+                                     BigDecimal rate,
+                                     BigDecimal psk,
+                                     boolean isInsuranceEnabled,
+                                     boolean isSalaryClient) {
+
         logger.info(("Starting createCreditDTO() with params amount %s, term %d, monthlyPayment %s, " +
                 "rate %s, psk %s, isInsuranceEnabled %s, isSalaryClient %s")
-                .formatted(amount.toString(), term, monthlyPayment.toString(),
-                        rate.toString(), psk.toString(), isInsuranceEnabled, isInsuranceEnabled));
+                .formatted(amount.toString(),
+                        term,
+                        monthlyPayment.toString(),
+                        rate.toString(),
+                        psk.toString(),
+                        isInsuranceEnabled,
+                        isInsuranceEnabled));
         CreditDTO dto = new CreditDTO(amount, term, monthlyPayment, rate, psk, isInsuranceEnabled, isSalaryClient);
+
         dto.setPaymentSchedule(getSchedule(amount, term, monthlyPayment, rate));
 
         return dto;
     }
 
-    private List<PaymentScheduleElement> getSchedule(BigDecimal amount, int term, BigDecimal monthlyPayment, BigDecimal rate) {
+    private List<PaymentScheduleElement> getSchedule(BigDecimal amount,
+                                                     int term,
+                                                     BigDecimal monthlyPayment,
+                                                     BigDecimal rate) {
+
         MathContext mathContext = new MathContext(6, RoundingMode.DOWN);
         List<PaymentScheduleElement> schedule = new ArrayList<>();
         LocalDate startDate = LocalDate.now();
@@ -49,10 +65,12 @@ public class CreditResponseService {
 
             int daysMonth = current.lengthOfMonth();
             int daysYear = current.lengthOfYear();
-            BigDecimal interestPayment = balanceDebt.multiply(rate)
+            BigDecimal interestPayment = balanceDebt
+                    .multiply(rate)
                     .multiply(BigDecimal.valueOf(daysMonth))
                     .divide(BigDecimal.valueOf(daysYear), mathContext)
                     .divide(BigDecimal.valueOf(100), mathContext);
+
             element.setInterestPayment(interestPayment);
             logger.info("Calculated interestPayment: %s".formatted(interestPayment.toString()));
 
