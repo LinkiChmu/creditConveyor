@@ -11,12 +11,12 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
-
 @Service
 @NoArgsConstructor
 public class UtilCalculator {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
+    private final MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
 
 
     public BigDecimal calculateMonthlyPayment(BigDecimal amount,
@@ -25,18 +25,12 @@ public class UtilCalculator {
         logger.info("Starting calculateMonthlyPayment() with params amount %s, rate %s, term %d"
                 .formatted(amount.toString(), rate.toString(), term));
 
-        MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
+        BigDecimal decimalMonthlyRate = monthlyRate(rate).divide(new BigDecimal(100), mathContext);
+        logger.info("Calculated monthlyRate: %s".formatted(decimalMonthlyRate.toString()));
 
-        // formula annuityRatio = ( monthlyRate * (1 + monthlyRate)^term ) / (1 + monthlyRate)^term - 1
-        BigDecimal monthlyRate = rate.divide(new BigDecimal(12), mathContext).divide(new BigDecimal(100), mathContext);
-        logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
+        BigDecimal accumulatedRatio = accumulatedRatio(decimalMonthlyRate, term);
 
-        BigDecimal accumulatedRatio = monthlyRate.add(new BigDecimal(1)).pow(term, mathContext);
-        logger.info("Calculated accumulatedRatio: %s".formatted(accumulatedRatio.toString()));
-
-        BigDecimal annuityRatio = (monthlyRate.multiply(accumulatedRatio, mathContext))
-                .divide(accumulatedRatio.subtract(new BigDecimal(1)), mathContext);
-        logger.info("Calculated annuityRatio: %s".formatted(annuityRatio.toString()));
+        BigDecimal annuityRatio = annuityRatio(decimalMonthlyRate, accumulatedRatio);
 
         BigDecimal monthlyPayment = amount.multiply(annuityRatio, mathContext);
         logger.info("Calculated monthlyPayment: %s".formatted(monthlyPayment.toString()));
@@ -47,8 +41,6 @@ public class UtilCalculator {
     public BigDecimal monthlyRate(BigDecimal rate) {
         logger.info("Starting annuityRatio() with param rate %s"
                 .formatted(rate.toString()));
-
-        MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);
 
         BigDecimal monthlyRate = rate.divide(new BigDecimal(12), mathContext);
         logger.info("Calculated monthlyRate: %s".formatted(monthlyRate.toString()));
@@ -68,5 +60,23 @@ public class UtilCalculator {
                                            boolean isInsuranceEnabled,
                                            BigDecimal insuranceAmount) {
         return (isInsuranceEnabled) ? amount.add(insuranceAmount) : amount;
+    }
+
+    public BigDecimal accumulatedRatio(BigDecimal decimalMonthlyRate, int term) {
+
+        BigDecimal accumulatedRatio = decimalMonthlyRate.add(new BigDecimal(1)).pow(term, mathContext);
+        logger.info("Calculated accumulatedRatio: %s".formatted(accumulatedRatio.toString()));
+        return accumulatedRatio;
+    }
+
+    // formula annuityRatio = ( decimalMonthlyRate * accumulatedRatio ) / (accumulatedRatio - 1)
+    public BigDecimal annuityRatio(BigDecimal decimalMonthlyRate,
+                                   BigDecimal accumulatedRatio) {
+
+        BigDecimal annuityRatio = (decimalMonthlyRate.multiply(accumulatedRatio, mathContext))
+                .divide(accumulatedRatio.subtract(new BigDecimal(1)), mathContext);
+        logger.info("Calculated annuityRatio: %s".formatted(annuityRatio.toString()));
+
+        return annuityRatio;
     }
 }
