@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UtilCalculatorTest {
 
-    private UtilCalculator calculator;
+    private CalculationUtil calculator;
     private MathContext mathContext;
 
     @BeforeEach
     void setUp() {
-        calculator = new UtilCalculator();
+        calculator = new CalculationUtil();
         mathContext = new MathContext(6, RoundingMode.HALF_UP);
     }
 

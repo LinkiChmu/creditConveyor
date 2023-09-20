@@ -1,6 +1,7 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
@@ -9,38 +10,33 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CalculationUtil;
 
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ApplicationService {
+
+    private static long applicationId;
+    private final CalculationUtil calculator;
 
     @Value("${loanOffer.baseRate}")
     private BigDecimal baseRate;
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
 
-    private final UtilCalculator calculator;
-    private static long applicationId;
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
-
-    @Autowired
-    public ApplicationService(UtilCalculator calculator) {
-        this.calculator = calculator;
-    }
 
     public List<LoanOfferDTO> getOffers(BigDecimal amount, int term) {
         applicationId++;
-        logger.info(String.format("Creating offer list with applicationId: %s", applicationId));
+        log.info(String.format("Creating offer list with applicationId: %s", applicationId));
         List<LoanOfferDTO> offers = List.of(
                 createOffer(applicationId, amount, term, false, false),
                 createOffer(applicationId, amount, term, false, true),
                 createOffer(applicationId, amount, term, true, false),
                 createOffer(applicationId, amount, term, true, true)
         );
-        logger.info("Offer list created");
+        log.info("Offer list created");
 
         return offers.stream().sorted(Comparator.comparing(LoanOfferDTO::getRate).reversed()).toList();
     }
@@ -51,21 +47,27 @@ public class ApplicationService {
                                      boolean isInsuranceEnabled,
                                      boolean isSalaryClient) {
 
-        LoanOfferDTO offer = new LoanOfferDTO(applicationId, requestedAmount, term, isInsuranceEnabled, isSalaryClient);
+        LoanOfferDTO offer = LoanOfferDTO.builder()
+                .applicationId(applicationId)
+                .requestedAmount(requestedAmount)
+                .term(term)
+                .isInsuranceEnabled(isInsuranceEnabled)
+                .isSalaryClient(isSalaryClient)
+                .build();
 
         BigDecimal totalAmount = calculator.calculateTotalAmount(requestedAmount, isInsuranceEnabled, insuranceAmount);
         offer.setTotalAmount(totalAmount);
-        logger.info(String.format("Setting totalAmount: %s", totalAmount));
+        log.info(String.format("Setting totalAmount: %s", totalAmount));
 
         BigDecimal totalRate = calculateTotalRent(baseRate, isInsuranceEnabled, isSalaryClient);
         offer.setRate(totalRate);
-        logger.info(String.format("Setting totalRate: %s", totalRate.toString()));
+        log.info(String.format("Setting totalRate: %s", totalRate.toString()));
 
         BigDecimal monthlyPayment = calculator.calculateMonthlyPayment(totalAmount, totalRate, term);
         offer.setMonthlyPayment(monthlyPayment);
-        logger.info(String.format("Setting monthlyPayment: %s", monthlyPayment));
+        log.info(String.format("Setting monthlyPayment: %s", monthlyPayment));
 
-        logger.info("The offer created");
+        log.info("The offer created");
         return offer;
     }
 

@@ -1,7 +1,10 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -10,27 +13,20 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.dto.LoanOfferDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.ApplicationService;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/conveyor/offers")
+@Slf4j
+@RequiredArgsConstructor
 public class ApplicationController {
 
     private final ApplicationService applicationService;
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
-
-    @Autowired
-    public ApplicationController(ApplicationService applicationService) {
-        this.applicationService = applicationService;
-    }
 
     @PostMapping()
-    public List<LoanOfferDTO> offerDTOs(@RequestBody @Valid LoanRequestDTO loanRequestDTO,
-                                        BindingResult bindingResult) {
+    public ResponseEntity<List<LoanOfferDTO>> offerDTOs(@RequestBody @Valid LoanRequestDTO loanRequestDTO,
+                                                        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             StringBuilder errorMsg = new StringBuilder();
@@ -42,10 +38,12 @@ public class ApplicationController {
             throw new DataNotValidException(errorMsg.toString());
         }
         BigDecimal amount = loanRequestDTO.getAmount();
-        logger.info(String.format("Extracted amount from LoanRequestDTO: %s", amount.toString()));
+        log.info(String.format("Extracted amount from LoanRequestDTO: %s", amount.toString()));
         int term = loanRequestDTO.getTerm();
-        logger.info(String.format("Extracted term from LoanRequestDTO: %d", term));
+        log.info(String.format("Extracted term from LoanRequestDTO: %d", term));
 
-        return applicationService.getOffers(amount, term);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(applicationService.getOffers(amount, term));
     }
 }

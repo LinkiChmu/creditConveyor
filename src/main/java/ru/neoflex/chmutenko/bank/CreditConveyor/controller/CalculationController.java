@@ -1,9 +1,8 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -21,25 +20,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/conveyor/calculation")
+@Slf4j
+@RequiredArgsConstructor
 public class CalculationController {
 
     private final ScoringService scoringService;
     private final CalculationService calculationService;
     private final CreditResponseService creditResponseService;
-    private static final Logger logger = LoggerFactory.getLogger(CalculationController.class);
+
     @Value("${loanOffer.baseRate}")
     private BigDecimal baseRate;
+
     @Value("${loanOffer.insurance}")
     private BigDecimal insuranceAmount;
-
-    @Autowired
-    public CalculationController(ScoringService scoringService,
-                                 CalculationService calculationService,
-                                 CreditResponseService creditResponseService) {
-        this.scoringService = scoringService;
-        this.calculationService = calculationService;
-        this.creditResponseService = creditResponseService;
-    }
 
     @PostMapping
     public CreditDTO calculateCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO, BindingResult bindingResult) {
@@ -52,14 +45,14 @@ public class CalculationController {
             }
             throw new DataNotValidException(errorMsg.toString());
         }
-        logger.info("Starting calculateCredit() with param scoringDataDTO %s".formatted(scoringDataDTO));
+        log.info("Starting calculateCredit() with param scoringDataDTO %s".formatted(scoringDataDTO));
 
         EmploymentDTO employmentDTO = scoringDataDTO.getEmploymentDTO();
-        logger.info("EmploymentDTO extracted from ScoringDataDTO: %s".formatted(employmentDTO));
+        log.info("EmploymentDTO extracted from ScoringDataDTO: %s".formatted(employmentDTO));
         scoringService.scoreData(scoringDataDTO, employmentDTO);
 
         BigDecimal totalRate = calculationService.calculateTotalRate(baseRate, scoringDataDTO, employmentDTO);
-        logger.info("calculateTotalRate() returned totalRate: %s".formatted(totalRate.toString()));
+        log.info("calculateTotalRate() returned totalRate: %s".formatted(totalRate.toString()));
 
         BigDecimal totalAmount = calculationService.calculateTotalAmount(
                 scoringDataDTO.getAmount(), scoringDataDTO.isInsuranceEnabled(), insuranceAmount);

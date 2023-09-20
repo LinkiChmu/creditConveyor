@@ -36,7 +36,14 @@ public class CreditResponseService {
                         psk.toString(),
                         isInsuranceEnabled,
                         isInsuranceEnabled));
-        CreditDTO dto = new CreditDTO(amount, term, monthlyPayment, rate, psk, isInsuranceEnabled, isSalaryClient);
+        CreditDTO dto = new CreditDTO();
+        dto.setAmount(amount);
+        dto.setTerm(term);
+        dto.setMonthlyPayment(monthlyPayment);
+        dto.setRate(rate);
+        dto.setPsk(psk);
+        dto.setInsuranceEnabled(isInsuranceEnabled);
+        dto.setSalaryClient(isSalaryClient);
 
         dto.setPaymentSchedule(getSchedule(amount, term, monthlyPayment, rate));
 

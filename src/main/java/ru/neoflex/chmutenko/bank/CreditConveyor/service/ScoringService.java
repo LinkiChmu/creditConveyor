@@ -8,18 +8,18 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.LoanDeniedException;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CalculationUtil;
 
 import java.math.BigDecimal;
 
 @Service
 public class ScoringService {
 
-    private final UtilCalculator calculator;
+    private final CalculationUtil calculator;
     private static final Logger logger = LoggerFactory.getLogger(ScoringService.class);
 
     @Autowired
-    public ScoringService(UtilCalculator calculator) {
+    public ScoringService(CalculationUtil calculator) {
         this.calculator = calculator;
     }
 

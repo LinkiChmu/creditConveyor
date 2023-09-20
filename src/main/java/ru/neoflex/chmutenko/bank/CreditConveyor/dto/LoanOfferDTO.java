@@ -4,8 +4,10 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoanOfferDTO {
 
     private long applicationId;
@@ -16,12 +18,4 @@ public class LoanOfferDTO {
     private BigDecimal rate;
     private Boolean isInsuranceEnabled;
     private Boolean isSalaryClient;
-
-    public LoanOfferDTO(long applicationId, BigDecimal requestedAmount, int term, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-        this.applicationId = applicationId;
-        this.requestedAmount = requestedAmount;
-        this.term = term;
-        this.isInsuranceEnabled = isInsuranceEnabled;
-        this.isSalaryClient = isSalaryClient;
-    }
 }

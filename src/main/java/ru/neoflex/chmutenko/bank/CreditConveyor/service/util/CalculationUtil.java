@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.Period;
 @Service
 @NoArgsConstructor
-public class UtilCalculator {
+public class CalculationUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
     private final MathContext mathContext = new MathContext(6, RoundingMode.HALF_UP);

@@ -3,6 +3,7 @@ package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
@@ -10,18 +11,25 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.Gender;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.MaritalStatus;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.UtilCalculator;
+import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CalculationUtil;
 
 import java.math.BigDecimal;
 
 @Service
 public class CalculationService {
 
-    private final UtilCalculator calculator;
     private static final Logger logger = LoggerFactory.getLogger(CalculationService.class);
 
+    private final CalculationUtil calculator;
+
+    @Value("${loanOffer.baseRate}")
+    private BigDecimal baseRate;
+
+    @Value("${loanOffer.insurance}")
+    private BigDecimal insuranceAmount;
+
     @Autowired
-    public CalculationService(UtilCalculator calculator) {
+    public CalculationService(CalculationUtil calculator) {
         this.calculator = calculator;
     }
 
