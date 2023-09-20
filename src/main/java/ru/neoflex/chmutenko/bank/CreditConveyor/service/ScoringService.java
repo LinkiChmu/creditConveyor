@@ -44,7 +44,6 @@ public class ScoringService {
         return requestedAmount.compareTo(salary.multiply(new BigDecimal(20))) == 1;
     }
 
-
     private boolean isAgeNotValid(int age) {
         log.info("Starting isAgeNotValid() with param age %d".formatted(age));
         return age < 20 || age > 60;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.CreditDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
-import ru.neoflex.chmutenko.bank.CreditConveyor.dto.PaymentScheduleElement;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentStatus;
@@ -15,13 +14,6 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.models.MaritalStatus;
 import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CalculationUtil;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +66,7 @@ public class CalculationService {
                 .isSalaryClient(salaryClient)
                 .build();
 
-        dto.setPaymentSchedule(makeSchedule(requestedAmount, term, monthlyPayment, totalRate));
+        dto.setPaymentSchedule(calculator.makeSchedule(requestedAmount, term, monthlyPayment, totalRate));
         return dto;
     }
 
@@ -193,71 +185,5 @@ public class CalculationService {
         }
         log.info("setByInsuranceAndSalaryClient() returned rate %s".formatted(rate.toString()));
         return rate;
-    }
-
-    private List<PaymentScheduleElement> makeSchedule(BigDecimal amount,
-                                                    int term,
-                                                    BigDecimal monthlyPayment,
-                                                    BigDecimal rate) {
-
-        //List<PaymentScheduleElement> schedule = new ArrayList<>();
-        LocalDate startDate = LocalDate.now();
-
-        List<PaymentScheduleElement> schedule = Stream.iterate(1, i -> ++i).limit(term)
-                .map(i -> {
-                    var current = startDate.plusMonths(i);
-
-                    PaymentScheduleElement el = PaymentScheduleElement.builder()
-                            .number(i)
-                            .date(current)
-                            .totalPayment(monthlyPayment)
-                            .build();
-                return el;
-                })
-                .map(el -> el.getRemainingDebt())
-                .reduce(amount, )
-                .map(el -> {
-
-                    el.setInterestPayment(calculator.calculateInterestPayment(el.getDate(), el.getRemainingDebt(), rate));
-                    el.setDebtPayment(monthlyPayment.subtract(el.getInterestPayment()));
-
-                    return el;
-                })
-
-
-//
-//                    el.setRemainingDebt(calculator.calculateRemainingDebt(balanceDebt, el.getDebtPayment()));
-//                    el.setBalanceDebt(el.getRemainingDebt());
-                .toList();
-                //.collect(Collectors.toList());
-                            //.interestPayment(CalculationUtil::calculateInterestPayment(current, currentBalance, rate))
-
-
-//        for (int i = 1; i < term + 1; i++) {
-//            PaymentScheduleElement element = new PaymentScheduleElement();
-//            element.setNumber(i);
-//
-//            LocalDate currentDate = startDate.plusMonths(i);
-//            element.setDate(currentDate);
-//
-//            element.setTotalPayment(monthlyPayment);
-//
-//
-//            BigDecimal interestPayment = calculator.calculateInterestPayment(currentDate, balanceDebt, rate);
-//            element.setInterestPayment(interestPayment);
-//
-//            BigDecimal debtPayment = calculator.calculateDebtPayment(monthlyPayment, interestPayment);
-//            element.setDebtPayment(debtPayment);
-//
-//            BigDecimal remainingDebt = calculator.calculateRemainingDebt(balanceDebt, debtPayment);
-//            element.setRemainingDebt(remainingDebt);
-//
-//            balanceDebt = remainingDebt;
-//            log.info("balanceDebt updated: %s".formatted(balanceDebt.toString()));
-//
-//            schedule.add(element);
-//            log.info("added %s".formatted(element));
-  //      }
-        return schedule;
     }
 }

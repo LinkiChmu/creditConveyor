@@ -1,18 +1,17 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service.util;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.neoflex.chmutenko.bank.CreditConveyor.service.ApplicationService;
+import ru.neoflex.chmutenko.bank.CreditConveyor.dto.PaymentScheduleElement;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @NoArgsConstructor
@@ -51,7 +50,6 @@ public class CalculationUtil {
         return monthlyRate;
     }
 
-
     public int countAge(LocalDate birthdate) {
         log.info("Starting countAge() with param LocalDate birthdate %s".formatted(birthdate.toString()));
         int age = Period.between(birthdate, LocalDate.now()).getYears();
@@ -84,7 +82,7 @@ public class CalculationUtil {
 
     public BigDecimal calculateInterestPayment(LocalDate currentDate,
                                                BigDecimal balanceDebt,
-                                               BigDecimal rate){
+                                               BigDecimal rate) {
         int daysMonth = currentDate.minusMonths(1).lengthOfMonth();
         int daysYear = currentDate.minusMonths(1).lengthOfYear();
 
@@ -106,11 +104,44 @@ public class CalculationUtil {
         return debtPayment;
     }
 
-    public BigDecimal calculateRemainingDebt (BigDecimal balanceDebt,
-                                           BigDecimal debtPayment) {
+    public BigDecimal calculateRemainingDebt(BigDecimal balanceDebt,
+                                             BigDecimal debtPayment) {
         BigDecimal remainingDebt = balanceDebt.subtract(debtPayment, mathContext);
         log.info("Calculated remainingDebt: %s".formatted(remainingDebt.toString()));
 
         return remainingDebt;
+    }
+
+    public List<PaymentScheduleElement> makeSchedule(BigDecimal amount,
+                                                     int term,
+                                                     BigDecimal monthlyPayment,
+                                                     BigDecimal rate) {
+
+        List<PaymentScheduleElement> schedule = new ArrayList<>();
+        LocalDate startDate = LocalDate.now();
+        BigDecimal balanceDebt = amount;
+
+        for (int i = 1; i < term + 1; i++) {
+            LocalDate current = startDate.plusMonths(i);
+            BigDecimal interestPayment = calculateInterestPayment(startDate.plusMonths(i), balanceDebt, rate);
+            BigDecimal debtPayment = calculateDebtPayment(monthlyPayment, interestPayment);
+            BigDecimal remainingDebt = calculateRemainingDebt(balanceDebt, debtPayment);
+
+            PaymentScheduleElement element = PaymentScheduleElement.builder()
+                    .number(i)
+                    .date(current)
+                    .totalPayment(monthlyPayment)
+                    .interestPayment(interestPayment)
+                    .debtPayment(debtPayment)
+                    .remainingDebt(remainingDebt)
+                    .build();
+
+            balanceDebt = remainingDebt;
+            log.info("balanceDebt updated: %s".formatted(balanceDebt.toString()));
+
+            schedule.add(element);
+            log.info("added %s".formatted(element));
+        }
+        return schedule;
     }
 }
