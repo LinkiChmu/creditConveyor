@@ -1,8 +1,7 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.EmploymentDTO;
 import ru.neoflex.chmutenko.bank.CreditConveyor.dto.ScoringDataDTO;
@@ -13,15 +12,11 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.service.util.CalculationUtil;
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ScoringService {
 
     private final CalculationUtil calculator;
-    private static final Logger logger = LoggerFactory.getLogger(ScoringService.class);
-
-    @Autowired
-    public ScoringService(CalculationUtil calculator) {
-        this.calculator = calculator;
-    }
 
     public void scoreData(ScoringDataDTO scoringDataDTO,
                           EmploymentDTO employmentDTO) {
@@ -32,37 +27,37 @@ public class ScoringService {
                 isWorkExperienceTotalNotValid(employmentDTO.getWorkExperienceTotal()) ||
                 isWorkExperienceCurrentNotValid(employmentDTO.getWorkExperienceCurrent())
         ) {
-            logger.warn("Credit scoring not passed. Throwing LoanDeniedException");
+            log.warn("Credit scoring not passed. Throwing LoanDeniedException");
             throw new LoanDeniedException();
         }
-        logger.info("Credit scoring is passed");
+        log.info("Credit scoring is passed");
     }
 
     private boolean isUnemployed(EmploymentStatus status) {
-        logger.info("Starting isUnemployed() with param EmploymentStatus %s".formatted(status));
+        log.info("Starting isUnemployed() with param EmploymentStatus %s".formatted(status));
         return status == EmploymentStatus.UNEMPLOYED;
     }
 
     private boolean isRequestedAmountTooHigh(BigDecimal requestedAmount, BigDecimal salary) {
-        logger.info("Starting isRequestedAmountTooHigh() with params requestedAmount %s and salary %s"
+        log.info("Starting isRequestedAmountTooHigh() with params requestedAmount %s and salary %s"
                 .formatted(requestedAmount.toString(), salary.toString()));
         return requestedAmount.compareTo(salary.multiply(new BigDecimal(20))) == 1;
     }
 
 
     private boolean isAgeNotValid(int age) {
-        logger.info("Starting isAgeNotValid() with param age %d".formatted(age));
+        log.info("Starting isAgeNotValid() with param age %d".formatted(age));
         return age < 20 || age > 60;
     }
 
     private boolean isWorkExperienceTotalNotValid(int workExperienceTotal) {
-        logger.info("Starting isWorkExperienceTotalNotValid() with param workExperienceTotal %d"
+        log.info("Starting isWorkExperienceTotalNotValid() with param workExperienceTotal %d"
                 .formatted(workExperienceTotal));
         return workExperienceTotal < 12;
     }
 
     private boolean isWorkExperienceCurrentNotValid(int workExperienceCurrent) {
-        logger.info("Starting isWorkExperienceCurrentNotValid() with param workExperienceCurrent %d"
+        log.info("Starting isWorkExperienceCurrentNotValid() with param workExperienceCurrent %d"
                 .formatted(workExperienceCurrent));
         return workExperienceCurrent < 3;
     }
