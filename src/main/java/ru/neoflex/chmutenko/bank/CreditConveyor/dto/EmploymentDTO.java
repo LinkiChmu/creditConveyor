@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.springframework.stereotype.Component;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.EmploymentPositionSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.constraints.EmploymentStatusSubset;
 import ru.neoflex.chmutenko.bank.CreditConveyor.models.EmploymentPosition;
@@ -20,7 +19,7 @@ public class EmploymentDTO {
     @EmploymentStatusSubset(anyOf = {EmploymentStatus.EMPLOYED, EmploymentStatus.UNEMPLOYED, EmploymentStatus.SELF_EMPLOYED, EmploymentStatus.BUSINESS_OWNER})
     private EmploymentStatus employmentStatus;
 
-    @Pattern(regexp = "^[\\d]{10}$")
+    @Pattern(regexp = "^[\\d]{10}$", message = "INN must consist only of 10 digits")
     private String employerINN;
 
     @NotNull
@@ -36,7 +35,5 @@ public class EmploymentDTO {
 
     @NotNull
     @Min(value = 0)
-    private int workExperienceCurrent ;
-
-
+    private int workExperienceCurrent;
 }

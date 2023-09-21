@@ -79,7 +79,7 @@ public class ScoringDataDTO {
     @JsonProperty("employment")
     private EmploymentDTO employmentDTO;
 
-    @Pattern(regexp = "^[\\d]{20}$")
+    @Pattern(regexp = "^[\\d]{20}$", message = "Account must consist only of 20 digits")
     private String account;
 
     @NotNull

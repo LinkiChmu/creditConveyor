@@ -33,8 +33,9 @@ public class ApplicationController {
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 errorMsg.append(error.getField()).append(" - ")
-                        .append(error.getDefaultMessage()).append("\n");
+                        .append(error.getDefaultMessage()).append("; ");
             }
+            log.error("Exception from method offerDTOs: %s".formatted(errorMsg.toString()));
             throw new DataNotValidException(errorMsg.toString());
         }
         BigDecimal amount = loanRequestDTO.getAmount();

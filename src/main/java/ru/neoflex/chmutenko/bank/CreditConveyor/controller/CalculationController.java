@@ -37,6 +37,7 @@ public class CalculationController {
                 errorMsg.append(error.getField()).append(" - ")
                         .append(error.getDefaultMessage()).append("\n");
             }
+            log.error("Exception from method calculateCredit: %s".formatted(errorMsg.toString()));
             throw new DataNotValidException(errorMsg.toString());
         }
         log.info("Starting calculateCredit() with param scoringDataDTO %s".formatted(scoringDataDTO));

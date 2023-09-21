@@ -27,7 +27,7 @@ public class ScoringService {
                 isWorkExperienceTotalNotValid(employmentDTO.getWorkExperienceTotal()) ||
                 isWorkExperienceCurrentNotValid(employmentDTO.getWorkExperienceCurrent())
         ) {
-            log.warn("Credit scoring not passed. Throwing LoanDeniedException");
+            log.warn("Credit scoring not passed. Throwing LoanDeniedException from method scoreData");
             throw new LoanDeniedException();
         }
         log.info("Credit scoring is passed");

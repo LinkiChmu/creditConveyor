@@ -1,5 +1,6 @@
 package ru.neoflex.chmutenko.bank.CreditConveyor.advice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -9,6 +10,7 @@ import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.DataNotValidException
 import ru.neoflex.chmutenko.bank.CreditConveyor.exceptions.LoanDeniedException;
 
 @RestControllerAdvice
+@Slf4j
 public class ExceptionHandlerAdvice {
 
     @ExceptionHandler()
@@ -23,7 +25,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler()
     public ResponseEntity<String> jsonParseErrorExceptionHandler(HttpMessageNotReadableException e) {
-        return new ResponseEntity<>("Incorrect data!", HttpStatus.BAD_REQUEST);
+        log.error("Incorrect request: %s".formatted(e.getMessage()));
+        return new ResponseEntity<>("Incorrect input!", HttpStatus.BAD_REQUEST);
     }
-
 }
